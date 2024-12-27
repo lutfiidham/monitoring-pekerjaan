@@ -45,6 +45,14 @@ class UserResource extends Resource
             ->schema([
                 Forms\Components\Section::make()
                     ->schema([
+                        Forms\Components\FileUpload::make('profile_photo')
+                            ->disk('public')
+                            ->directory('profile-photos')
+                            ->image()
+                            ->maxSize(1024)
+                            ->preserveFilenames()
+                            ->avatar(),
+                        
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255),
@@ -53,7 +61,6 @@ class UserResource extends Resource
                             ->unique(ignoreRecord: true)
                             ->required()
                             ->maxLength(255),
-                            // Using CheckboxList Component
                         Forms\Components\CheckboxList::make('roles')
                             ->relationship('roles', 'name')
                             ->searchable(),
