@@ -2,10 +2,18 @@
 
 @config 'tailwind.config.js';
 
-.fi-sidebar-nav {
-    border-right: 1px solid #e4e4e5;
+.fi-topbar nav{
+    background-image: url('https://cdn.pixabay.com/photo/2021/08/11/18/06/paladin-6539115_960_720.png');
+    background-size: 100px;
+    background-repeat: no-repeat;
 }
 
-.dark .fi-sidebar-nav {
-    border-right: 1px solid #18181B;
+.fi-sidebar{
+    background-image: url('https://cdn.pixabay.com/photo/2017/01/31/23/42/animal-2028258_1280.png');
+
+}
+
+.fi-body .fi-layout{
+    /* background-image: url('https://cdn.pixabay.com/photo/2017/01/31/23/42/animal-2028258_1280.png'); */
+    background-repeat: no-repeat;
 }
