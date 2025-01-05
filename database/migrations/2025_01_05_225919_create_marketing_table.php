@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('tindak_lanjut')->nullable();
             $table->string('catatan')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
