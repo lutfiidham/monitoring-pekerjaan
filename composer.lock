@@ -4,8 +4,89 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d4edbef4f0bb5e4fb03fb081c2660a8",
+    "content-hash": "4efa9f2e28b8ed3ee7c346c2b016a754",
     "packages": [
+        {
+            "name": "andreia/filament-nord-theme",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/andreia/filament-nord-theme.git",
+                "reference": "6671bdb6e28278fa18485e6e585502d8b54a9f68"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/andreia/filament-nord-theme/zipball/6671bdb6e28278fa18485e6e585502d8b54a9f68",
+                "reference": "6671bdb6e28278fa18485e6e585502d8b54a9f68",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "illuminate/contracts": "^10.0|^11.0",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^8.1.1||^7.10.0",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^9.0.0||^8.22.0",
+                "pestphp/pest": "^2.1",
+                "pestphp/pest-plugin-arch": "^2.0",
+                "pestphp/pest-plugin-laravel": "^2.0",
+                "pestphp/pest-plugin-livewire": "^2.1",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Andreia\\FilamentNordTheme\\FilamentNordThemeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Andreia\\FilamentNordTheme\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andreia Bohner",
+                    "email": "andreiabohner@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A minimalist Arctic Nord theme for FilamentPHP",
+            "homepage": "https://github.com/andreia/filament-nord-theme",
+            "keywords": [
+                "arctic",
+                "filament",
+                "filament-theme",
+                "filamentphp",
+                "laravel",
+                "nord-theme",
+                "php",
+                "theme"
+            ],
+            "support": {
+                "issues": "https://github.com/andreia/filament-nord-theme/issues",
+                "source": "https://github.com/andreia/filament-nord-theme"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/andreia",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-12-16T01:02:09+00:00"
+        },
         {
             "name": "anourvalar/eloquent-serialize",
             "version": "1.2.27",
@@ -9805,16 +9886,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.12.14",
+            "version": "1.12.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "e73868f809e68fff33be961ad4946e2e43ec9e38"
+                "reference": "c91d4e8bc056f46cf653656e6f71004b254574d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e73868f809e68fff33be961ad4946e2e43ec9e38",
-                "reference": "e73868f809e68fff33be961ad4946e2e43ec9e38",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c91d4e8bc056f46cf653656e6f71004b254574d1",
+                "reference": "c91d4e8bc056f46cf653656e6f71004b254574d1",
                 "shasum": ""
             },
             "require": {
@@ -9859,7 +9940,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-31T07:26:13+00:00"
+            "time": "2025-01-05T16:40:22+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

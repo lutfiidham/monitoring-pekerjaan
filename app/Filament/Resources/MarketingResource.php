@@ -2,16 +2,20 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\MarketingResource\Pages;
-use App\Filament\Resources\MarketingResource\RelationManagers;
-use App\Models\Marketing;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\User;
 use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\Marketing;
+use App\Models\Perusahaan;
 use Filament\Tables\Table;
+use Filament\Support\RawJs;
+use Filament\Resources\Resource;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\MarketingResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\MarketingResource\RelationManagers;
 
 class MarketingResource extends Resource
 {
@@ -23,23 +27,60 @@ class MarketingResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('perusahaan_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('jenis_kontrak')
+                Forms\Components\Select::make('perusahaan_id')
+                    ->label('Perusahaan')
+                    ->relationship(name: 'perusahaan', titleAttribute: 'nama_perusahaan')
+                    ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('nama_perusahaan')
+                            ->required()
+                            ->unique(ignoreRecord: true),
+                                Forms\Components\TextInput::make('alamat'),
+                                Forms\Components\TextInput::make('nama_pic'),
+                                Forms\Components\TextInput::make('no_telp')
+                                    ->tel(),
+                                Forms\Components\TextInput::make('email')
+                                    ->email(),
+                    ]),
+                Forms\Components\Select::make('user_id')
+                    ->label('PIC Sucofindo')
+                    ->options(User::whereHas('roles', function ($query) {
+                        $query->where('name', 'Verifikator');
+                    })->pluck('name', 'id'))
+                    ->searchable(),
+                Forms\Components\Select::make('jenis_kontrak')
+                    ->options([
+                        'Komersial' => 'Komersial',
+                        'Non Komersial' => 'Non Komersial',
+                    ])
                     ->required(),
-                Forms\Components\TextInput::make('jenis_verifikasi')
+                Forms\Components\Select::make('jenis_verifikasi')
+                    ->options([
+                        'tkdn_barang' => 'TKDN Barang',
+                        'tkdn_jasa' => 'TKDN Jasa',
+                        'tkdn_gab' => 'TKDN Gabungan Barang dan Jasa',
+                        'bmp' => 'BMP',
+                    ])
                     ->required(),
                 Forms\Components\TextInput::make('nama_produk_atau_pekerjaan')
                     ->required(),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'follow_up' => '💪 Follow Up',
+                        'hold' => '🫷 Hold',
+                        'deal' => '🤝 Deal',
+                        'failed' => '⛔ Failed',
+                    ])
                     ->required(),
-                Forms\Components\TextInput::make('progress')
+                Forms\Components\TextArea::make('progress')
                     ->required(),
                 Forms\Components\TextInput::make('anggaran')
+                    ->prefix('Rp')
+                    ->mask(RawJs::make(<<<'JS'
+                        $money($input, ',')
+                    JS))
+                    ->suffix('.000.000')
+                    ->numeric()
                     ->required(),
                 Forms\Components\TextInput::make('kendala'),
                 Forms\Components\TextInput::make('tindak_lanjut'),
@@ -51,19 +92,40 @@ class MarketingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('perusahaan_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('perusahaan.nama_perusahaan')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('user.name')
+                    ->searchable()
+                    ->label('PIC Sucofindo')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jenis_kontrak')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('jenis_verifikasi')
+                    ->formatStateUsing(function ($state) {
+                        // Mapping kode ke teks
+                        $mapping = [
+                            'tkdn_barang' => 'TKDN Barang',
+                            'tkdn_jasa' => 'TKDN Jasa',
+                            'tkdn_gab' => 'TKDN Gabungan Barang dan Jasa',
+                            'bmp' => 'BMP',
+                        ];
+                        // Kembalikan nilai teks berdasarkan kode
+                        return $mapping[$state] ?? 'Tidak Diketahui';
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nama_produk_atau_pekerjaan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->formatStateUsing(function ($state) {
+                        $mapping = [
+                            'follow_up' => '💪 Follow Up',
+                            'hold' => '🫷 Hold',
+                            'deal' => '🤝 Deal',
+                            'failed' => '⛔ Failed',
+                        ];
+                        return $mapping[$state] ?? 'Tidak Diketahui';
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('progress')
                     ->searchable(),
@@ -90,6 +152,19 @@ class MarketingResource extends Resource
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
+                SelectFilter::make('user_id')
+                    ->label('PIC Sucofindo')
+                    ->options(User::whereHas('roles', function ($query) {
+                        $query->where('name', 'Verifikator');
+                    })->pluck('name', 'id'))
+                    ->searchable(),
+                SelectFilter::make('jenis_kontrak')
+                    ->label('Jenis Kontrak')
+                    ->options([
+                        'komersial' => 'Komersial',
+                        'non_komersial' => 'Non Komersial',
+                    ])
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

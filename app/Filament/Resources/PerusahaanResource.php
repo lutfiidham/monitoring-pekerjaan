@@ -24,7 +24,8 @@ class PerusahaanResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('nama_perusahaan')
-                    ->required(),
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 Forms\Components\TextInput::make('alamat'),
                 Forms\Components\TextInput::make('no_telp')
                     ->tel(),

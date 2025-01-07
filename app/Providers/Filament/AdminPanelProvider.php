@@ -66,6 +66,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                \Andreia\FilamentNordTheme\FilamentNordThemePlugin::make()
             ]);
     }
 }
