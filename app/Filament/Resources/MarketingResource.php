@@ -7,7 +7,6 @@ use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Marketing;
-use App\Models\Perusahaan;
 use Filament\Tables\Table;
 use Filament\Support\RawJs;
 use Filament\Resources\Resource;
@@ -27,10 +26,28 @@ class MarketingResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\ToggleButtons::make('is_existing')
+                ->label(false)
+                ->inline()
+                ->options([
+                    'baru' => 'Baru',
+                    'existing' => 'Existing',
+                ])
+                ->icons([
+                    'baru' => 'heroicon-o-sparkles',
+                    'existing' => 'heroicon-c-clipboard-document-check',
+                ])
+                ->colors([
+                    'baru' => 'info',
+                    'existing' => 'warning',
+                ])
+                ->required()
+                ->columnSpan('full'),
                 Forms\Components\Select::make('perusahaan_id')
                     ->label('Perusahaan')
                     ->relationship(name: 'perusahaan', titleAttribute: 'nama_perusahaan')
                     ->searchable()
+                    ->required()
                     ->createOptionForm([
                         Forms\Components\TextInput::make('nama_perusahaan')
                             ->required()
@@ -42,18 +59,22 @@ class MarketingResource extends Resource
                                 Forms\Components\TextInput::make('email')
                                     ->email(),
                     ]),
+
                 Forms\Components\Select::make('user_id')
                     ->label('PIC Sucofindo')
                     ->options(User::whereHas('roles', function ($query) {
                         $query->where('name', 'Verifikator');
                     })->pluck('name', 'id'))
+                    ->required()
                     ->searchable(),
+
                 Forms\Components\Select::make('jenis_kontrak')
                     ->options([
                         'Komersial' => 'Komersial',
                         'Non Komersial' => 'Non Komersial',
                     ])
                     ->required(),
+
                 Forms\Components\Select::make('jenis_verifikasi')
                     ->options([
                         'tkdn_barang' => 'TKDN Barang',
@@ -62,18 +83,34 @@ class MarketingResource extends Resource
                         'bmp' => 'BMP',
                     ])
                     ->required(),
+
                 Forms\Components\TextInput::make('nama_produk_atau_pekerjaan')
                     ->required(),
+
                 Forms\Components\Select::make('status')
                     ->options([
-                        'follow_up' => '💪 Follow Up',
+                        'follow_up' => '📱 Follow Up',
                         'hold' => '🫷 Hold',
-                        'deal' => '🤝 Deal',
+                        'deal' => '✅ Deal',
                         'failed' => '⛔ Failed',
                     ])
                     ->required(),
-                Forms\Components\TextArea::make('progress')
+
+                Forms\Components\RichEditor::make('progress')
+                    ->toolbarButtons([
+                        'bold',
+                        'bulletList',
+                        'italic',
+                        'link',
+                        'orderedList',
+                        'redo',
+                        'strike',
+                        'underline',
+                        'undo',
+                    ])
+                    ->columnSpan('full')
                     ->required(),
+
                 Forms\Components\TextInput::make('anggaran')
                     ->prefix('Rp')
                     ->mask(RawJs::make(<<<'JS'
@@ -82,9 +119,11 @@ class MarketingResource extends Resource
                     ->suffix('.000.000')
                     ->numeric()
                     ->required(),
+                    
                 Forms\Components\TextInput::make('kendala'),
                 Forms\Components\TextInput::make('tindak_lanjut'),
                 Forms\Components\TextInput::make('catatan'),
+                
             ]);
     }
 
@@ -99,6 +138,12 @@ class MarketingResource extends Resource
                     ->searchable()
                     ->label('PIC Sucofindo')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('is_existing')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'baru' => 'success',
+                        'existing' => 'warning',
+                    }),
                 Tables\Columns\TextColumn::make('jenis_kontrak')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('jenis_verifikasi')
@@ -115,20 +160,23 @@ class MarketingResource extends Resource
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nama_produk_atau_pekerjaan')
-                    ->searchable(),
+                    ->searchable()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('status')
                     ->formatStateUsing(function ($state) {
                         $mapping = [
-                            'follow_up' => '💪 Follow Up',
+                            'follow_up' => '📱 Follow Up',
                             'hold' => '🫷 Hold',
-                            'deal' => '🤝 Deal',
+                            'deal' => '✅ Deal',
                             'failed' => '⛔ Failed',
                         ];
                         return $mapping[$state] ?? 'Tidak Diketahui';
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('progress')
-                    ->searchable(),
+                    ->html()
+                    ->searchable()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('anggaran')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('kendala')
@@ -151,7 +199,6 @@ class MarketingResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
                 SelectFilter::make('user_id')
                     ->label('PIC Sucofindo')
                     ->options(User::whereHas('roles', function ($query) {
@@ -165,7 +212,26 @@ class MarketingResource extends Resource
                         'non_komersial' => 'Non Komersial',
                     ])
                     ->searchable(),
-            ])
+                SelectFilter::make('jenis_verifikasi')
+                    ->label('Jenis Verifikasi')
+                    ->options([
+                        'tkdn_barang' => 'TKDN Barang',
+                        'tkdn_jasa' => 'TKDN Jasa',
+                        'tkdn_gab' => 'TKDN Gabungan Barang dan Jasa',
+                        'bmp' => 'BMP',
+                    ])
+                    ->searchable(),
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'follow_up' => '📱 Follow Up',
+                        'hold' => '🫷 Hold',
+                        'deal' => '✅ Deal',
+                        'failed' => '⛔ Failed',
+                    ])
+                    ->searchable(),
+                Tables\Filters\TrashedFilter::make(),
+                ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
