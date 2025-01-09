@@ -66,6 +66,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                \Rmsramos\Activitylog\ActivitylogPlugin::make()
+                ->authorize(
+                    fn () => auth()->user()->id === 1
+                ),
                 // \Andreia\FilamentNordTheme\FilamentNordThemePlugin::make()
             ]);
     }

@@ -143,9 +143,11 @@ class MarketingResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'baru' => 'success',
                         'existing' => 'warning',
-                    }),
+                    })
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('jenis_kontrak')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('jenis_verifikasi')
                     ->formatStateUsing(function ($state) {
                         // Mapping kode ke teks
@@ -158,7 +160,8 @@ class MarketingResource extends Resource
                         // Kembalikan nilai teks berdasarkan kode
                         return $mapping[$state] ?? 'Tidak Diketahui';
                     })
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('nama_produk_atau_pekerjaan')
                     ->searchable()
                     ->wrap(),
@@ -172,19 +175,28 @@ class MarketingResource extends Resource
                         ];
                         return $mapping[$state] ?? 'Tidak Diketahui';
                     })
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('progress')
                     ->html()
                     ->searchable()
-                    ->wrap(),
+                    ->wrap()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('anggaran')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('kendala')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('tindak_lanjut')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('catatan')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
