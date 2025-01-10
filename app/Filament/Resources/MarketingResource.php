@@ -137,7 +137,8 @@ class MarketingResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->searchable()
                     ->label('PIC Sucofindo')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('is_existing')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -165,18 +166,28 @@ class MarketingResource extends Resource
                 Tables\Columns\TextColumn::make('nama_produk_atau_pekerjaan')
                     ->searchable()
                     ->wrap(),
-                Tables\Columns\TextColumn::make('status')
-                    ->formatStateUsing(function ($state) {
-                        $mapping = [
-                            'follow_up' => '📱 Follow Up',
+                
+                Tables\Columns\SelectColumn::make('status')
+                    ->options([
+                        'follow_up' => '📱 Follow Up',
                             'hold' => '🫷 Hold',
                             'deal' => '✅ Deal',
                             'failed' => '⛔ Failed',
-                        ];
-                        return $mapping[$state] ?? 'Tidak Diketahui';
-                    })
-                    ->searchable()
+                    ])
                     ->sortable(),
+
+                // Tables\Columns\TextColumn::make('status')
+                //     ->formatStateUsing(function ($state) {
+                //         $mapping = [
+                //             'follow_up' => '📱 Follow Up',
+                //             'hold' => '🫷 Hold',
+                //             'deal' => '✅ Deal',
+                //             'failed' => '⛔ Failed',
+                //         ];
+                //         return $mapping[$state] ?? 'Tidak Diketahui';
+                //     })
+                //     ->searchable()
+                //     ->sortable(),
 
                 Tables\Columns\TextColumn::make('progress')
                     ->html()
