@@ -71,6 +71,8 @@ class AdminPanelProvider extends PanelProvider
                     fn () => auth()->user()->id === 1
                 ),
                 // \Andreia\FilamentNordTheme\FilamentNordThemePlugin::make()
-            ]);
+            ])
+            ->favicon(asset('images/icons8'))
+            ;
     }
 }

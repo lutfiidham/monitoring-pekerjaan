@@ -98,15 +98,7 @@ class MarketingResource extends Resource
 
                 Forms\Components\RichEditor::make('progress')
                     ->toolbarButtons([
-                        'bold',
-                        'bulletList',
-                        'italic',
-                        'link',
-                        'orderedList',
-                        'redo',
-                        'strike',
-                        'underline',
-                        'undo',
+                        
                     ])
                     ->columnSpan('full')
                     ->required(),
@@ -194,6 +186,9 @@ class MarketingResource extends Resource
                     ->searchable()
                     ->wrap()
                     ->sortable(),
+
+                // Tables\Columns\RichEditorColumn::make('progress')
+                //     ->searchable(),
 
                 Tables\Columns\TextColumn::make('anggaran')
                     ->searchable()
