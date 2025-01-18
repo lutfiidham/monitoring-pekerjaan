@@ -7,6 +7,7 @@ use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Marketing;
+use App\Models\Perusahaan;
 use Filament\Tables\Table;
 use Filament\Support\RawJs;
 use Filament\Resources\Resource;
@@ -27,7 +28,8 @@ class MarketingResource extends Resource
         return $form
             ->schema([
                 Forms\Components\ToggleButtons::make('is_existing')
-                ->label(false)
+                ->label("Is Existing")
+                // ->id('is_existing')
                 ->inline()
                 ->options([
                     'baru' => 'Baru',
@@ -46,6 +48,8 @@ class MarketingResource extends Resource
                 Forms\Components\Select::make('perusahaan_id')
                     ->label('Perusahaan')
                     ->relationship(name: 'perusahaan', titleAttribute: 'nama_perusahaan')
+                    ->options(Perusahaan::query()->pluck('nama_perusahaan', 'id'))
+                    // ->preload()
                     ->searchable()
                     ->required()
                     ->createOptionForm([
@@ -70,8 +74,8 @@ class MarketingResource extends Resource
 
                 Forms\Components\Select::make('jenis_kontrak')
                     ->options([
-                        'Komersial' => 'Komersial',
-                        'Non Komersial' => 'Non Komersial',
+                        'komersial' => 'Komersial',
+                        'non_komersial' => 'Non Komersial',
                     ])
                     ->required(),
 
@@ -95,11 +99,13 @@ class MarketingResource extends Resource
                         'failed' => '⛔ Failed',
                     ])
                     ->required(),
-
+                Forms\Components\View::make('button-template-progress-marketing')
+                    ->columnSpan('full'),
                 Forms\Components\RichEditor::make('progress')
                     ->toolbarButtons([
                         
                     ])
+                    ->id('progress')
                     ->columnSpan('full')
                     ->required(),
 
@@ -130,17 +136,31 @@ class MarketingResource extends Resource
                     ->searchable()
                     ->label('PIC Sucofindo')
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('is_existing')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'baru' => 'success',
                         'existing' => 'warning',
                     })
+                    ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jenis_kontrak')
+                    ->formatStateUsing(function ($state) {
+                        $mapping = [
+                            'non_komersial' => 'Non Komersial',
+                            'komersial' => 'Komersial',
+                        ];
+                        return $mapping[$state] ?? 'Tidak Diketahui';
+                    })
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'non_komersial' => 'success',
+                        'komersial' => 'warning',
+                    })
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('jenis_verifikasi')
                     ->formatStateUsing(function ($state) {
                         // Mapping kode ke teks
@@ -154,7 +174,8 @@ class MarketingResource extends Resource
                         return $mapping[$state] ?? 'Tidak Diketahui';
                     })
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('nama_produk_atau_pekerjaan')
                     ->searchable()
                     ->wrap(),
@@ -185,7 +206,8 @@ class MarketingResource extends Resource
                     ->html()
                     ->searchable()
                     ->wrap()
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(50),
 
                 // Tables\Columns\RichEditorColumn::make('progress')
                 //     ->searchable(),
@@ -193,7 +215,6 @@ class MarketingResource extends Resource
                 Tables\Columns\TextColumn::make('anggaran')
                     ->searchable()
                     ->sortable(),
-
                 Tables\Columns\TextColumn::make('kendala')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),

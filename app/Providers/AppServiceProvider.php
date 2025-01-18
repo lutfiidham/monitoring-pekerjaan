@@ -2,16 +2,17 @@
 
 namespace App\Providers;
 
-use Filament\Forms\Components\Field;
-use Filament\Forms\Components\Placeholder;
-use Filament\Infolists\Components\Entry;
-use Filament\Support\Components\Component;
-use Filament\Support\Concerns\Configurable;
+use Illuminate\Support\Facades\DB;
 use Filament\Tables\Columns\Column;
+use Filament\Forms\Components\Field;
 use Filament\Tables\Filters\BaseFilter;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
+use Filament\Infolists\Components\Entry;
+use Filament\Forms\Components\Placeholder;
+use Filament\Support\Components\Component;
+use Filament\Support\Concerns\Configurable;
+use Filament\Support\View\Components\Modal;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -46,5 +47,6 @@ class AppServiceProvider extends ServiceProvider
         $this->configureCommands();
         $this->configureModels();
         $this->translatableComponents();
+        Modal::closedByClickingAway(false);
     }
 }

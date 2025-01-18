@@ -72,7 +72,7 @@ class AdminPanelProvider extends PanelProvider
                 ),
                 // \Andreia\FilamentNordTheme\FilamentNordThemePlugin::make()
             ])
-            ->favicon(asset('images/icons8'))
+            ->favicon(asset('images/icons8-external-link-32.png'))
             ;
     }
 }
