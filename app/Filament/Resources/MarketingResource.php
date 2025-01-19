@@ -23,8 +23,21 @@ class MarketingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    private static ?array $verifikatorUsers = null;
+
+    protected static function getVerifikatorUsers(): array
+    {
+        if (self::$verifikatorUsers === null) {
+            self::$verifikatorUsers = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Verifikator');
+            })->pluck('name', 'id')->toArray();
+        }
+        return self::$verifikatorUsers;
+    }
+
     public static function form(Form $form): Form
     {
+        $verifikatorUsers = self::getVerifikatorUsers();
         return $form
             ->schema([
                 Forms\Components\ToggleButtons::make('is_existing')
@@ -66,9 +79,7 @@ class MarketingResource extends Resource
 
                 Forms\Components\Select::make('user_id')
                     ->label('PIC Sucofindo')
-                    ->options(User::whereHas('roles', function ($query) {
-                        $query->where('name', 'Verifikator');
-                    })->pluck('name', 'id'))
+                    ->options($verifikatorUsers)
                     ->required()
                     ->searchable(),
 
@@ -127,6 +138,7 @@ class MarketingResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $verifikatorUsers = self::getVerifikatorUsers();
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('perusahaan.nama_perusahaan')
@@ -240,9 +252,7 @@ class MarketingResource extends Resource
             ->filters([
                 SelectFilter::make('user_id')
                     ->label('PIC Sucofindo')
-                    ->options(User::whereHas('roles', function ($query) {
-                        $query->where('name', 'Verifikator');
-                    })->pluck('name', 'id'))
+                    ->options($verifikatorUsers)
                     ->searchable(),
                 SelectFilter::make('jenis_kontrak')
                     ->label('Jenis Kontrak')
