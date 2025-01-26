@@ -6,5 +6,9 @@ export default {
         './app/Filament/**/*.php',
         './resources/views/filament/**/*.blade.php',
         './vendor/filament/**/*.blade.php',
+        
+        './resources/**/*.blade.php',
+        './app/Filament/**/*.php', // Tambahkan path ini
+        './app/Http/**/*.php',    // Jika ada logika custom di controller
     ],
 }

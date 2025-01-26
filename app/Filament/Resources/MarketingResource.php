@@ -10,6 +10,7 @@ use App\Models\Marketing;
 use App\Models\Perusahaan;
 use Filament\Tables\Table;
 use Filament\Support\RawJs;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Resources\Resource;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -190,7 +191,8 @@ class MarketingResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('nama_produk_atau_pekerjaan')
                     ->searchable()
-                    ->wrap(),
+                    ->wrap()
+                    ->size(TextColumn\TextColumnSize::ExtraSmall),
                 
                 Tables\Columns\SelectColumn::make('status')
                     ->options([
@@ -219,7 +221,8 @@ class MarketingResource extends Resource
                     ->searchable()
                     ->wrap()
                     ->sortable()
-                    ->limit(50),
+                    ->limit(50)
+                    ->size(TextColumn\TextColumnSize::ExtraSmall),
 
                 // Tables\Columns\RichEditorColumn::make('progress')
                 //     ->searchable(),

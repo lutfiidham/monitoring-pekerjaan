@@ -21,8 +21,10 @@
         "laravel/framework": "^11.9",
         "laravel/pail": "^1.2",
         "laravel/tinker": "^2.9",
+        "pelmered/filament-money-field": "^1.4",
         "rmsramos/activitylog": "^1.0",
-        "timokoerber/laravel-one-time-operations": "^1.4"
+        "timokoerber/laravel-one-time-operations": "^1.4",
+        "tuxones/filament-js-money-field": "^0.1.5"
     },
     "require-dev": {
         "aniftyco/skeletor": "0.1.0",
