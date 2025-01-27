@@ -22,6 +22,7 @@ use Tuxones\JsMoneyField\Forms\Components\JSMoneyInput;
 use Pelmered\FilamentMoneyField\Tables\Columns\MoneyColumn;
 use Pelmered\FilamentMoneyField\Forms\Components\MoneyInput;
 use App\Filament\Resources\PekerjaanResource\RelationManagers;
+use Filament\Tables\Columns\TextColumn;
 
 class PekerjaanResource extends Resource
 {
@@ -157,7 +158,9 @@ class PekerjaanResource extends Resource
                     ->searchable()
                     ->wrap()
                     ->sortable()
-                    ->limit(50),
+                    ->limit(50)
+                    ->size(TextColumn\TextColumnSize::ExtraSmall),
+                    
                 Tables\Columns\TextColumn::make('status_collecting_document')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tahun')
@@ -250,17 +253,9 @@ class PekerjaanResource extends Resource
                 ]),
             ])
             ->recordClasses(fn (Model $record) => match ($record->status) {
-                'opening_meeting' => 'bg-blue-50 border-l-4 border-blue-500 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-300',
-                'collecting_document_i' => 'bg-green-50 border-l-4 border-green-500 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:border-green-700 dark:text-green-300',
-                'survey_lapangan' => 'bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-300',
-                'collecting_document_ii' => 'bg-teal-50 border-l-4 border-teal-500 text-teal-800 hover:bg-teal-200 dark:bg-teal-900 dark:border-teal-700 dark:text-teal-300',
-                'verifikasi_teknis' => 'bg-indigo-50 border-l-4 border-indigo-500 text-indigo-800 hover:bg-indigo-200 dark:bg-indigo-900 dark:border-indigo-700 dark:text-indigo-300',
-                'panel_internal' => 'bg-purple-50 border-l-4 border-purple-500 text-purple-800 hover:bg-purple-200 dark:bg-purple-900 dark:border-purple-700 dark:text-purple-300',
-                'panel_kemenperin' => 'bg-pink-50 border-l-4 border-pink-500 text-pink-800 hover:bg-pink-200 dark:bg-pink-900 dark:border-pink-700 dark:text-pink-300',
-                'closing_meeting' => 'bg-orange-50 border-l-4 border-orange-500 text-orange-800 hover:bg-orange-200 dark:bg-orange-900 dark:border-orange-700 dark:text-orange-300',
-                'closed' => 'bg-gray-50 border-l-4 border-gray-500 text-gray-800 hover:bg-gray-200 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300',
-                'hold' => 'bg-amber-50 border-l-4 border-amber-500 text-amber-800 hover:bg-amber-200 dark:bg-amber-900 dark:border-amber-700 dark:text-amber-300',
-                'cancel' => 'bg-red-50 border-l-4 border-red-500 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:border-red-700 dark:text-red-300',
+                'closed' => 'bg-green-300 border-l-4 border-green-500 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-800',
+                'hold' => 'bg-yellow-300 border-l-4 border-yellow-500 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-300 dark:hover:bg-yellow-800',
+                'cancel' => 'bg-red-300 border-l-4 border-red-500 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-800',
                 default => 'bg-white dark:bg-gray-800 dark:text-gray-300',
             });
     }
