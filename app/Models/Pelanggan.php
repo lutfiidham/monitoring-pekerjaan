@@ -8,12 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
-class Perusahaan extends Model
+class Pelanggan extends Model
 {
     use SoftDeletes, HasRoles, LogsActivity;
 
-    protected $table = 'perusahaan';
+    protected $table = 'pelanggan';
     protected $fillable = ['nama_perusahaan', 'alamat', 'no_telp', 'email', 'nama_pic'];
 
     public function getActivitylogOptions(): LogOptions

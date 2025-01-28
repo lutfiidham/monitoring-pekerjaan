@@ -25,7 +25,7 @@ class Marketing extends Model
 
     public function perusahaan()
     {
-        return $this->belongsTo(Perusahaan::class);
+        return $this->belongsTo(Pelanggan::class);
     }
 
     public function user()

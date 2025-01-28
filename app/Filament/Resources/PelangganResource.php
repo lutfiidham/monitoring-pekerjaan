@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PerusahaanResource\Pages;
-use App\Filament\Resources\PerusahaanResource\RelationManagers;
-use App\Models\Perusahaan;
+use App\Filament\Resources\PelangganResource\Pages;
+use App\Filament\Resources\PelangganResource\RelationManagers;
+use App\Models\Pelanggan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class PerusahaanResource extends Resource
+class PelangganResource extends Resource
 {
-    protected static ?string $model = Perusahaan::class;
+    protected static ?string $model = Pelanggan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -83,7 +83,7 @@ class PerusahaanResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManagePerusahaans::route('/'),
+            'index' => Pages\ManagePelanggans::route('/'),
         ];
     }
 

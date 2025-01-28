@@ -8,7 +8,7 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Marketing;
 use App\Models\Pekerjaan;
-use App\Models\Perusahaan;
+use App\Models\Pelanggan;
 use Filament\Tables\Table;
 use Filament\Support\RawJs;
 use Filament\Resources\Resource;
@@ -68,7 +68,7 @@ class MarketingResource extends Resource
                 Forms\Components\Select::make('perusahaan_id')
                     ->label('Perusahaan')
                     ->relationship(name: 'perusahaan', titleAttribute: 'nama_perusahaan')
-                    ->options(Perusahaan::query()->pluck('nama_perusahaan', 'id'))
+                    ->options(Pelanggan::query()->pluck('nama_perusahaan', 'id'))
                     // ->preload()
                     ->searchable()
                     ->required()
