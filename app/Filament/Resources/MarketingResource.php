@@ -7,16 +7,22 @@ use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Marketing;
+use App\Models\Pekerjaan;
 use App\Models\Perusahaan;
 use Filament\Tables\Table;
 use Filament\Support\RawJs;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
+use Filament\Tables\Actions\Action;
+use Filament\Support\Enums\Alignment;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Enums\ActionsPosition;
 use App\Filament\Resources\MarketingResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\MarketingResource\RelationManagers;
 
 class MarketingResource extends Resource
 {
@@ -203,19 +209,6 @@ class MarketingResource extends Resource
                     ])
                     ->sortable(),
 
-                // Tables\Columns\TextColumn::make('status')
-                //     ->formatStateUsing(function ($state) {
-                //         $mapping = [
-                //             'follow_up' => '📱 Follow Up',
-                //             'hold' => '🫷 Hold',
-                //             'deal' => '✅ Deal',
-                //             'failed' => '⛔ Failed',
-                //         ];
-                //         return $mapping[$state] ?? 'Tidak Diketahui';
-                //     })
-                //     ->searchable()
-                //     ->sortable(),
-
                 Tables\Columns\TextColumn::make('progress')
                     ->html()
                     ->searchable()
@@ -223,9 +216,6 @@ class MarketingResource extends Resource
                     ->sortable()
                     ->limit(50)
                     ->size(TextColumn\TextColumnSize::ExtraSmall),
-
-                // Tables\Columns\RichEditorColumn::make('progress')
-                //     ->searchable(),
 
                 Tables\Columns\TextColumn::make('anggaran')
                     ->searchable()
@@ -285,18 +275,102 @@ class MarketingResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
                 ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
-            ])
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                    Action::make('inputToPekerjaan')
+                        ->label('Input ke Pekerjaan')
+                        ->icon('heroicon-o-plus-circle')
+                        ->modalHeading('Input ke Pekerjaan')
+                        ->modalContent(function (Marketing $record) {
+                            $existingPekerjaan = Pekerjaan::where('marketing_id', $record->id)->first();
+                        
+                            if ($existingPekerjaan) {
+                                $tableRowIfNotEmpty = function ($label, $value) {
+                                    return !empty($value) 
+                                        ? "<tr><td class='border px-4 py-2 font-bold'>$label</td><td class='border px-4 py-2'>$value</td></tr>" 
+                                        : '';
+                                };
+                        
+                                return new HtmlString(<<<HTML
+                                <p>Data dengan Marketing ID ini sudah ada di tabel Pekerjaan.</p>
+                                <table class="w-full border-collapse">
+                                    <tbody>
+                                        {$tableRowIfNotEmpty('Nama Produk/Jasa', $existingPekerjaan->nama_produk_atau_pekerjaan)}
+                                        {$tableRowIfNotEmpty('Nomor OC', $existingPekerjaan->nomor_oc)}
+                                        {$tableRowIfNotEmpty('Nomor Order', $existingPekerjaan->nomor_order)}
+                                        {$tableRowIfNotEmpty('Jumlah Produk', $existingPekerjaan->jumlah_produk)}
+                                        {$tableRowIfNotEmpty('Nilai Kontrak', $existingPekerjaan->nilai_kontrak)}
+                                        {$tableRowIfNotEmpty('Status', $existingPekerjaan->status)}
+                                        {$tableRowIfNotEmpty('Progress', $existingPekerjaan->progress)}
+                                        {$tableRowIfNotEmpty('Status Collecting Document', $existingPekerjaan->status_collecting_document)}
+                                        {$tableRowIfNotEmpty('Tahun', $existingPekerjaan->tahun)}
+                                    </tbody>
+                                </table>
+                                <p class="mt-4">Apakah Anda yakin ingin melanjutkan?</p>
+                                HTML);
+                            }
+                        
+                            return new HtmlString('Apakah Anda yakin ingin menginput data ini ke tabel Pekerjaan?');
+                        })
+                        ->modalSubmitActionLabel(function (Marketing $record) {
+                            $existingPekerjaan = Pekerjaan::where('marketing_id', $record->id)->first();
+                            
+                            if ($existingPekerjaan) {
+                                return 'Ya, Tetap Lanjutkan';
+                            }
+
+                            return 'Ya, Input';
+                        })
+                        ->modalFooterActionsAlignment(Alignment::Center)
+                        ->action(function (Marketing $record) {
+                            $existingPekerjaan = Pekerjaan::where('marketing_id', $record->id)->first();
+                            
+                            if ($existingPekerjaan) {
+                                Pekerjaan::create([
+                                    'marketing_id' => $record->id,
+                                    'user_id' => $record->user_id,
+                                    'nama_produk_atau_pekerjaan' => $record->nama_produk_atau_pekerjaan,
+                                ]);
+
+                                Notification::make()
+                                    ->title('Data berhasil diinput ke Pekerjaan')
+                                    ->success()
+                                    ->send();
+                            } else {
+                                Pekerjaan::create([
+                                    'marketing_id' => $record->id,
+                                    'user_id' => $record->user_id,
+                                    'nama_produk_atau_pekerjaan' => $record->nama_produk_atau_pekerjaan,
+                                ]);
+
+                                Notification::make()
+                                    ->title('Data berhasil diinput ke Pekerjaan')
+                                    ->success()
+                                    ->send();
+                            }
+                        })
+                        // ->requiresConfirmation()
+                        ->modalAlignment(Alignment::Center)
+                        ->modalIcon('heroicon-o-plus-circle')
+                    ])->tooltip('Actions'),
+                
+                ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->recordClasses(fn (Model $record) => match ($record->status) {
+                'deal' => 'bg-green-300 border-l-4 border-green-500 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-800',
+                'hold' => 'bg-yellow-300 border-l-4 border-yellow-500 text-yellow-800 hover:bg-yellow-200 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-300 dark:hover:bg-yellow-800',
+                'failed' => 'bg-red-300 border-l-4 border-red-500 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-800',
+                default => 'bg-white dark:bg-gray-800 dark:text-gray-300',
+            });
     }
 
     public static function getPages(): array
