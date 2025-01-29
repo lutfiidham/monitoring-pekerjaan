@@ -77,11 +77,11 @@ class MarketingResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true),
                                 Forms\Components\TextInput::make('alamat'),
-                                Forms\Components\TextInput::make('nama_pic'),
-                                Forms\Components\TextInput::make('no_telp')
-                                    ->tel(),
-                                Forms\Components\TextInput::make('email')
-                                    ->email(),
+                                // Forms\Components\TextInput::make('nama_pic'),
+                                // Forms\Components\TextInput::make('no_telp')
+                                //     ->tel(),
+                                // Forms\Components\TextInput::make('email')
+                                //     ->email(),
                     ]),
 
                 Forms\Components\Select::make('user_id')
@@ -89,6 +89,12 @@ class MarketingResource extends Resource
                     ->options($verifikatorUsers)
                     ->required()
                     ->searchable(),
+                
+                Forms\Components\TextInput::make('nama_pic')
+                    ->label('PIC Perusahaan'),
+
+                Forms\Components\TextInput::make('no_telp')
+                    ->label('Telp'),
 
                 Forms\Components\Select::make('jenis_kontrak')
                     ->options([
@@ -148,6 +154,12 @@ class MarketingResource extends Resource
         $verifikatorUsers = self::getVerifikatorUsers();
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('nomor')
+                ->label('No.')
+                ->getStateUsing(function ($rowLoop, $record) {
+                    return $rowLoop->iteration;
+                })
+                ->sortable(false), // Nomor urut biasanya tidak perlu diurutkan
                 Tables\Columns\TextColumn::make('perusahaan.nama_perusahaan')
                     ->searchable()
                     ->sortable(),

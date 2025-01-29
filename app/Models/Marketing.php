@@ -14,13 +14,40 @@ class Marketing extends Model
     use SoftDeletes, HasRoles, LogsActivity;
 
     protected $table = 'marketing';
-    protected $fillable = ['perusahaan_id', 'user_id', 'jenis_kontrak', 'jenis_verifikasi', 'nama_produk_atau_pekerjaan', 'status', 'progress', 'anggaran', 'kendala', 'tindak_lanjut', 'catatan', 'is_existing'];
+    protected $fillable = [
+        'perusahaan_id',
+        'user_id',
+        'jenis_kontrak',
+        'jenis_verifikasi',
+        'nama_produk_atau_pekerjaan',
+        'status',
+        'progress',
+        'anggaran',
+        'kendala',
+        'tindak_lanjut',
+        'catatan',
+        'is_existing',
+        'nama_pic',
+        'no_telp'];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['perusahaan_id', 'user_id', 'jenis_kontrak', 'jenis_verifikasi', 'nama_produk_atau_pekerjaan', 'status', 'progress', 'anggaran', 'kendala', 'tindak_lanjut', 'catatan', 'is_existing']);
-            
+        ->logOnly([
+            'perusahaan_id',
+            'user_id',
+            'jenis_kontrak',
+            'jenis_verifikasi',
+            'nama_produk_atau_pekerjaan',
+            'status',
+            'progress',
+            'anggaran',
+            'kendala',
+            'tindak_lanjut',
+            'catatan',
+            'is_existing',
+            'nama_pic',
+            'no_telp']);
     }
 
     public function perusahaan()

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\Marketing;
 use App\Models\Pekerjaan;
@@ -12,9 +13,11 @@ use Filament\Tables\Table;
 use Filament\Support\RawJs;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\DB;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Enums\ActionsPosition;
 use App\Filament\Resources\PekerjaanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Tuxones\JsMoneyField\Tables\Columns\JSMoneyColumn;
@@ -22,7 +25,6 @@ use Tuxones\JsMoneyField\Forms\Components\JSMoneyInput;
 use Pelmered\FilamentMoneyField\Tables\Columns\MoneyColumn;
 use Pelmered\FilamentMoneyField\Forms\Components\MoneyInput;
 use App\Filament\Resources\PekerjaanResource\RelationManagers;
-use Filament\Tables\Columns\TextColumn;
 
 class PekerjaanResource extends Resource
 {
@@ -49,8 +51,8 @@ class PekerjaanResource extends Resource
             ->schema([
                 Forms\Components\Select::make('marketing_id')
                     ->options(
-                        Marketing::join('perusahaan', 'marketing.perusahaan_id', '=', 'perusahaan.id')
-                        ->select('marketing.id', DB::raw("perusahaan.nama_perusahaan || ' - Rp' || marketing.anggaran || 'jt' as detail"))
+                        Marketing::join('pelanggan', 'marketing.perusahaan_id', '=', 'pelanggan.id')
+                        ->select('marketing.id', DB::raw("pelanggan.nama_perusahaan || ' - Rp' || marketing.anggaran || 'jt' as detail"))
                         ->get()->pluck('detail', 'id')
                         )
                     ->required(),
@@ -59,6 +61,77 @@ class PekerjaanResource extends Resource
                     ->options($verifikatorUsers)
                     ->required()
                     ->searchable(),
+                                
+                Forms\Components\TextInput::make('nama_pic')
+                    ->label('PIC Perusahaan')
+                    ->datalist(function (Get $get) {
+                        // Ambil marketing_id yang dipilih
+                        $marketingId = $get('marketing_id');
+                        
+                        if ($marketingId) {
+                            // Cari marketing dengan ID tersebut
+                            $marketing = Marketing::findOrFail($marketingId);
+                            
+                            // Ambil nama_pic dari marketing dan pekerjaan dengan perusahaan yang sama
+                            $picList = collect([
+                                Marketing::where('perusahaan_id', $marketing->perusahaan_id)
+                                    ->whereNotNull('nama_pic')
+                                    ->distinct('nama_pic')
+                                    ->pluck('nama_pic'),
+                                
+                                Pekerjaan::whereHas('marketing', function ($query) use ($marketing) {
+                                    $query->where('perusahaan_id', $marketing->perusahaan_id);
+                                })
+                                    ->whereNotNull('nama_pic')
+                                    ->distinct('nama_pic')
+                                    ->pluck('nama_pic')
+                            ])->collapse()->unique()->values()->toArray();
+                            
+                            return $picList;
+                        }
+                        
+                        return [];
+                    }),
+
+                Forms\Components\TextInput::make('no_telp')
+                    ->label('Telp')
+                    ->datalist(function (Get $get) {
+                        // Ambil marketing_id yang dipilih
+                        $marketingId = $get('marketing_id');
+                        $namaPic = $get('nama_pic');
+                        
+                        if ($marketingId) {
+                            // Cari marketing dengan ID tersebut
+                            $marketing = Marketing::findOrFail($marketingId);
+                            
+                            // Ambil no_telp dari marketing dan pekerjaan dengan perusahaan yang sama
+                            $telpList = collect([
+                                // No telp dari marketing dengan perusahaan yang sama
+                                Marketing::where('perusahaan_id', $marketing->perusahaan_id)
+                                    ->when($namaPic, function ($query) use ($namaPic) {
+                                        return $query->where('nama_pic', $namaPic);
+                                    })
+                                    ->whereNotNull('no_telp')
+                                    ->distinct('no_telp')
+                                    ->pluck('no_telp'),
+                                
+                                // No telp dari pekerjaan dengan marketing dari perusahaan yang sama
+                                Pekerjaan::whereHas('marketing', function ($query) use ($marketing) {
+                                    $query->where('perusahaan_id', $marketing->perusahaan_id);
+                                })
+                                    ->when($namaPic, function ($query) use ($namaPic) {
+                                        return $query->where('nama_pic', $namaPic);
+                                    })
+                                    ->whereNotNull('no_telp')
+                                    ->distinct('no_telp')
+                                    ->pluck('no_telp')
+                            ])->collapse()->unique()->values()->toArray();
+                            
+                            return $telpList;
+                        }
+                        
+                        return [];
+                    }),
                 
                 Forms\Components\TextInput::make('nomor_oc'),
                 Forms\Components\TextInput::make('nomor_order'),
@@ -121,6 +194,14 @@ class PekerjaanResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('marketing.perusahaan.nama_perusahaan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nama_pic')
+                    ->label('Nama PIC Perusahaan')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('no_telp')
+                    ->label('Telp')
+                    ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nomor_oc')
                     ->searchable(),
@@ -240,11 +321,13 @@ class PekerjaanResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
-            ])
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                ])
+            ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

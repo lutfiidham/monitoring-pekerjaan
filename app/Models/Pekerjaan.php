@@ -14,12 +14,36 @@ class Pekerjaan extends Model
     use SoftDeletes, HasRoles, LogsActivity;
 
     protected $table = 'pekerjaan';
-    protected $fillable = ['marketing_id', 'user_id', 'nomor_oc', 'nomor_order', 'nama_produk_atau_pekerjaan', 'jumlah_produk', 'nilai_kontrak', 'status', 'progress', 'status_collecting_document', 'tahun'];
+    protected $fillable = ['marketing_id',
+        'user_id',
+        'nomor_oc',
+        'nomor_order',
+        'nama_produk_atau_pekerjaan',
+        'jumlah_produk',
+        'nilai_kontrak',
+        'status',
+        'progress',
+        'status_collecting_document',
+        'tahun',
+        'nama_pic',
+        'no_telp',];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['marketing_id', 'user_id', 'nomor_oc', 'nomor_order', 'nama_produk_atau_pekerjaan', 'jumlah_produk', 'nilai_kontrak', 'status', 'progress', 'status_collecting_document', 'tahun']);
+        ->logOnly(['marketing_id',
+            'user_id',
+            'nomor_oc',
+            'nomor_order',
+            'nama_produk_atau_pekerjaan',
+            'jumlah_produk',
+            'nilai_kontrak',
+            'status',
+            'progress',
+            'status_collecting_document',
+            'tahun',
+            'nama_pic',
+            'no_telp']);
             
     }
     
