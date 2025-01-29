@@ -345,6 +345,9 @@ class MarketingResource extends Resource
                                     'marketing_id' => $record->id,
                                     'user_id' => $record->user_id,
                                     'nama_produk_atau_pekerjaan' => $record->nama_produk_atau_pekerjaan,
+                                    'nilai_kontrak' => ($record->anggaran*100000000),
+                                    'nama_pic' => $record->nama_pic,
+                                    'no_telp' => $record->no_telp,
                                 ]);
 
                                 Notification::make()
@@ -356,6 +359,9 @@ class MarketingResource extends Resource
                                     'marketing_id' => $record->id,
                                     'user_id' => $record->user_id,
                                     'nama_produk_atau_pekerjaan' => $record->nama_produk_atau_pekerjaan,
+                                    'nilai_kontrak' => ($record->anggaran*100000000),
+                                    'nama_pic' => $record->nama_pic,
+                                    'no_telp' => $record->no_telp,
                                 ]);
 
                                 Notification::make()
