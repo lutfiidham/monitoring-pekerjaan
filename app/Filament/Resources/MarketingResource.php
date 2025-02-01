@@ -28,7 +28,9 @@ class MarketingResource extends Resource
 {
     protected static ?string $model = Marketing::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-m-table-cells';
+
+    protected static ?int $navigationSort = 2;
 
     private static ?array $verifikatorUsers = null;
 
@@ -123,7 +125,7 @@ class MarketingResource extends Resource
                         'failed' => '⛔ Failed',
                     ])
                     ->required(),
-                Forms\Components\View::make('button-template-progress-marketing')
+                Forms\Components\View::make('custom-components.button-template-progress-marketing')
                     ->columnSpan('full'),
                 Forms\Components\RichEditor::make('progress')
                     ->toolbarButtons([
@@ -160,14 +162,21 @@ class MarketingResource extends Resource
                     return $rowLoop->iteration;
                 })
                 ->sortable(false), // Nomor urut biasanya tidak perlu diurutkan
-                Tables\Columns\TextColumn::make('perusahaan.nama_perusahaan')
-                    ->searchable()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('pekerjaan_status')
+                    ->label('Status Pekerjaan')
+                    ->badge()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'warning')
+                    ->getStateUsing(fn (Model $record): bool => $record->pekerjaans()->exists())
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Sudah Diinput' : 'Belum Diinput')
+                    ->sortable(false),
                 Tables\Columns\TextColumn::make('user.name')
                     ->searchable()
                     ->label('PIC Sucofindo')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('perusahaan.nama_perusahaan')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('is_existing')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {

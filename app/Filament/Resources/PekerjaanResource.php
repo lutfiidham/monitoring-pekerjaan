@@ -10,7 +10,6 @@ use Filament\Forms\Form;
 use App\Models\Marketing;
 use App\Models\Pekerjaan;
 use Filament\Tables\Table;
-use Filament\Support\RawJs;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\DB;
 use Filament\Tables\Columns\TextColumn;
@@ -20,17 +19,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
 use App\Filament\Resources\PekerjaanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Tuxones\JsMoneyField\Tables\Columns\JSMoneyColumn;
-use Tuxones\JsMoneyField\Forms\Components\JSMoneyInput;
 use Pelmered\FilamentMoneyField\Tables\Columns\MoneyColumn;
 use Pelmered\FilamentMoneyField\Forms\Components\MoneyInput;
-use App\Filament\Resources\PekerjaanResource\RelationManagers;
+use Filament\Actions;
 
 class PekerjaanResource extends Resource
 {
     protected static ?string $model = Pekerjaan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-briefcase';
+
+    protected static ?int $navigationSort = 3;
 
     private static ?array $verifikatorUsers = null;
 
@@ -155,7 +154,7 @@ class PekerjaanResource extends Resource
                         'cancel' => '❌ Cancel',
                     ])
                     ->required(),
-                    Forms\Components\View::make('button-template-progress-marketing')
+                    Forms\Components\View::make('custom-components.button-template-progress-pekerjaan')
                     ->columnSpan('full'),
                 Forms\Components\RichEditor::make('progress')
                     ->toolbarButtons([
@@ -204,11 +203,15 @@ class PekerjaanResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nomor_oc')
+                    ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nomor_order')
+                    ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nama_produk_atau_pekerjaan')
+                    ->toggleable(isToggledHiddenByDefault: false)
                     ->label('Nama Produk/Pekerjaan')
+                    ->wrap()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('jumlah_produk')
                     ->label('Jml Prdk')
@@ -281,6 +284,32 @@ class PekerjaanResource extends Resource
                             $query->whereRaw('strftime("%Y", tahun) = ?', [$data['value']]);
                         }
                     }),
+                SelectFilter::make('nomor_oc')
+                    ->label('No. OC')
+                    ->options([
+                        'empty' => 'Tanpa No. OC',
+                        'filled' => 'Dengan No. OC',
+                    ])
+                    ->query(function ($query, array $data) {
+                        return match ($data['value'] ?? null) {
+                            'empty' => $query->whereNull('nomor_oc')->orWhere('nomor_oc', ''),
+                            'filled' => $query->whereNotNull('nomor_oc')->where('nomor_oc', '!=', ''),
+                            default => $query,
+                        };
+                    }),
+                SelectFilter::make('nomor_order')
+                    ->label('No. Order')
+                    ->options([
+                        'empty' => 'Tanpa No. Order',
+                        'filled' => 'Dengan No. Order',
+                    ])
+                    ->query(function ($query, array $data) {
+                        return match ($data['value'] ?? null) {
+                            'empty' => $query->whereNull('nomor_order')->orWhere('nomor_order', ''),
+                            'filled' => $query->whereNotNull('nomor_order')->where('nomor_order', '!=', ''),
+                            default => $query,
+                        };
+                    }),
                 SelectFilter::make('user_id')
                     ->label('PIC Sucofindo')
                     ->options($verifikatorUsers)
@@ -347,6 +376,15 @@ class PekerjaanResource extends Resource
     {
         return [
             'index' => Pages\ManagePekerjaans::route('/'),
+        ];
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            \EightyNine\ExcelImport\ExcelImportAction::make()
+                ->color("primary"),
+            Actions\CreateAction::make(),
         ];
     }
 

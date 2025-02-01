@@ -60,4 +60,9 @@ class Marketing extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function pekerjaans()
+    {
+        return $this->hasMany(Pekerjaan::class, 'marketing_id');
+    }
+
 }
