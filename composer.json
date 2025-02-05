@@ -19,11 +19,13 @@
         "bezhansalleh/filament-shield": "^3.3",
         "eightynine/filament-excel-import": "^3.1",
         "filament/filament": "^3.2",
+        "filament/spatie-laravel-media-library-plugin": "^3.2",
         "laravel/framework": "^11.9",
         "laravel/pail": "^1.2",
         "laravel/tinker": "^2.9",
         "pelmered/filament-money-field": "^1.4",
         "rmsramos/activitylog": "^1.0",
+        "spatie/laravel-medialibrary": "^11.12",
         "timokoerber/laravel-one-time-operations": "^1.4"
     },
     "require-dev": {

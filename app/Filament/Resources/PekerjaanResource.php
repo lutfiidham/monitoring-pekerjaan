@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\Marketing;
@@ -19,9 +20,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
 use App\Filament\Resources\PekerjaanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Pelmered\FilamentMoneyField\Tables\Columns\MoneyColumn;
 use Pelmered\FilamentMoneyField\Forms\Components\MoneyInput;
-use Filament\Actions;
 
 class PekerjaanResource extends Resource
 {
@@ -169,6 +170,15 @@ class PekerjaanResource extends Resource
                     ->label('Tanggal Mulai Kontrak')
                     ->native(false)
                     ->displayFormat('d/m/Y'),
+
+                SpatieMediaLibraryFileUpload::make('files')
+                    ->collection('files') // Harus sama dengan yang didefinisikan di model
+                    ->multiple()
+                    ->preserveFilenames()
+                    ->maxFiles(5) // Atur jumlah maksimal file yang bisa diupload
+                    ->enableDownload()
+                    ->enableOpen()
+                    ->columnSpanFull(),
             ]);
     }
 

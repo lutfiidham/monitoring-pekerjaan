@@ -7,11 +7,12 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-
-class Pekerjaan extends Model
+class Pekerjaan extends Model implements HasMedia
 {
-    use SoftDeletes, HasRoles, LogsActivity;
+    use SoftDeletes, HasRoles, LogsActivity, InteractsWithMedia;
 
     protected $table = 'pekerjaan';
     protected $fillable = ['marketing_id',
@@ -45,6 +46,11 @@ class Pekerjaan extends Model
             'nama_pic',
             'no_telp']);
             
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('files')->useDisk('public');
     }
     
     public function marketing()
