@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\Marketing;
 use App\Models\Pekerjaan;
@@ -74,6 +75,7 @@ class MarketingResource extends Resource
                     // ->preload()
                     ->searchable()
                     ->required()
+                    ->live()
                     ->createOptionForm([
                         Forms\Components\TextInput::make('nama_perusahaan')
                             ->required()
@@ -93,7 +95,32 @@ class MarketingResource extends Resource
                     ->searchable(),
                 
                 Forms\Components\TextInput::make('nama_pic')
-                    ->label('PIC Perusahaan'),
+                    ->label('PIC Perusahaan')
+                    ->datalist(function (Get $get) {
+                        // Ambil perusahaan_id yang dipilih
+                        $perusahaanId = $get('perusahaan_id');
+                        
+                        if ($perusahaanId) {
+                            // Ambil nama_pic dari marketing dan pekerjaan dengan perusahaan yang sama
+                            $picList = collect([
+                                Marketing::where('perusahaan_id', $perusahaanId)
+                                    ->whereNotNull('nama_pic')
+                                    ->distinct('nama_pic')
+                                    ->pluck('nama_pic'),
+                                
+                                Pekerjaan::whereHas('marketing', function ($query) use ($perusahaanId) {
+                                    $query->where('perusahaan_id', $perusahaanId);
+                                })
+                                    ->whereNotNull('nama_pic')
+                                    ->distinct('nama_pic')
+                                    ->pluck('nama_pic')
+                            ])->collapse()->unique()->values()->toArray();
+                            
+                            return $picList;
+                        }
+                        
+                        return [];
+                    }),
 
                 Forms\Components\TextInput::make('no_telp')
                     ->label('Telp'),
