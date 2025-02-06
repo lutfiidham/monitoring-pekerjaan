@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use App\Models\Arsip;
 use Filament\Actions;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
@@ -13,8 +14,12 @@ use App\Models\Pekerjaan;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
+use Filament\Tables\Actions\Action;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Enums\ActionsPosition;
@@ -365,7 +370,59 @@ class PekerjaanResource extends Resource
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
-                ])
+                    Action::make('inputToArsip')
+                        ->label('Input ke Arsip')
+                        ->icon('heroicon-o-folder-plus')
+                        ->modalHeading('Input ke Arsip')
+                        ->modalContent(function (Pekerjaan $record) {
+                            $existingArsip = Arsip::where('pekerjaan_id', $record->id)->first();
+                            
+                            if ($existingArsip) {
+                                return new HtmlString(<<<HTML
+                                <p>Arsip untuk pekerjaan ini sudah ada.</p>
+                                <p>Apakah Anda ingin dialihkan ke halaman arsip yang sudah ada?</p>
+                                HTML);
+                            }
+                            
+                            return new HtmlString('Apakah Anda yakin ingin membuat arsip untuk pekerjaan ini?');
+                        })
+                        ->modalSubmitActionLabel(function (Pekerjaan $record) {
+                            $existingArsip = Arsip::where('pekerjaan_id', $record->id)->first();
+                            
+                            return $existingArsip ? 'Lihat Arsip' : 'Ya, Buat Arsip';
+                        })
+                        ->modalFooterActionsAlignment(Alignment::Center)
+                        ->action(function (Pekerjaan $record) {
+                            $existingArsip = Arsip::where('pekerjaan_id', $record->id)->first();
+                            
+                            if ($existingArsip) {
+                                // Redirect to existing Arsip resource
+                                return redirect()->to(ArsipResource::getUrl('edit', ['record' => $existingArsip]));
+                            }
+                            
+                            // Buat arsip baru
+                            $arsip = Arsip::create([
+                                'pekerjaan_id' => $record->id,
+                                'nama_arsip' => 'Arsip ' . $record->nama_produk_atau_pekerjaan,
+                                'deskripsi' => 'Deskripsi', // Anda bisa sesuaikan status awal
+                            ]);
+                    
+                            Notification::make()
+                                ->title('Arsip berhasil dibuat')
+                                ->body('Arsip untuk pekerjaan "' . $record->nama_produk_atau_pekerjaan . '" telah dibuat.')
+                                ->success()
+                                ->send();
+                    
+                            // Redirect to the newly created Arsip
+                            return redirect()->to(ArsipResource::getUrl('edit', ['record' => $arsip]));
+                        })
+                        ->modalAlignment(Alignment::Center)
+                        ->modalIcon('heroicon-o-folder-plus')
+                        // ->requiresConfirmation()
+                        ->modalAlignment(Alignment::Center)
+                        ->modalIcon('heroicon-o-plus-circle')
+                    ])->tooltip('Actions'),
+
             ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
