@@ -1,5 +1,7 @@
 <?php
 
+use Livewire\Attributes\Lazy;
+
 return [
 
     /*
@@ -81,7 +83,7 @@ return [
     /*
      * The class that contains the strategy for determining a media file's path.
      */
-    'path_generator' => Spatie\MediaLibrary\Support\PathGenerator\DefaultPathGenerator::class,
+    'path_generator' => App\Support\CustomPathGenerator::class,
 
     /*
      * The class that contains the strategy for determining how to remove files.
@@ -269,7 +271,7 @@ return [
      *
      * More info: https://css-tricks.com/native-lazy-loading/
      */
-    'default_loading_attribute_value' => null,
+    'default_loading_attribute_value' => 'Lazy',
 
     /*
      * You can specify a prefix for that is used for storing all media.

@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function configureModels(): void
     {
-        Model::shouldBeStrict(! app()->isProduction());
+        // Model::shouldBeStrict(! app()->isProduction());
     }
 
     public function boot(): void
