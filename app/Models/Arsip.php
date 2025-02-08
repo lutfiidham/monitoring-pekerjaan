@@ -13,4 +13,9 @@ class Arsip extends Model
     {
         return $this->hasMany(ItemArsip::class);
     }
+
+    public function pekerjaan()
+    {
+        return $this->belongsTo(Pekerjaan::class);
+    }
 }

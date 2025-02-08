@@ -20,4 +20,9 @@ class Pelanggan extends Model
         return LogOptions::defaults()
             ->logOnly(['nama_perusahaan', 'alamat', 'no_telp', 'email', 'nama_pic']);
     }
+
+    public function marketing()
+    {
+        return $this->hasMany(Marketing::class, 'perusahaan_id');
+    }
 }

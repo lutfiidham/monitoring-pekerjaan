@@ -4,13 +4,15 @@ namespace App\Filament\Resources\ArsipResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Arsip;
 use Filament\Forms\Form;
+use App\Models\ItemArsip;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Symfony\Component\VarDumper\VarDumper;
 
 class ItemArsipRelationManager extends RelationManager
 {
@@ -18,20 +20,26 @@ class ItemArsipRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
+        $arsip_id = $this->ownerRecord->id;
+        $arsip = Arsip::with('pekerjaan.marketing.pelanggan')->find($arsip_id);
+        // dd($arsip);
+        $directory = date_format($arsip->created_at, 'Y') . '/' . $arsip->pekerjaan->marketing->perusahaan_id . '/' . $arsip->pekerjaan_id . '/';
+
         return $form
             ->schema([
                 Forms\Components\TextInput::make('kategori')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('deskripsi'),
-                SpatieMediaLibraryFileUpload::make('arsip')
-                    ->collection('arsip') // Harus sama dengan yang didefinisikan di model
+                FileUpload::make('file_path')
+                    ->disk('public') // Menyimpan di storage/public
                     ->multiple()
+                    ->directory(fn (Get $get) => $directory.$get('kategori')) // Struktur direktori
                     ->preserveFilenames()
-                    ->maxFiles(5) // Atur jumlah maksimal file yang bisa diupload
-                    ->enableDownload()
-                    ->enableOpen()
-                    ->columnSpanFull(),
+                    ->downloadable()
+                    ->previewable()
+                    ->moveFiles()
+                    ->maxSize(90240), // Maksimum 90MB
             ]);
     }
 
@@ -41,9 +49,9 @@ class ItemArsipRelationManager extends RelationManager
             ->recordTitleAttribute('kategori')
             ->columns([
                 Tables\Columns\TextColumn::make('kategori'),
-                SpatieMediaLibraryImageColumn::make('arsip')
-                    ->collection('arsip')
-                    ->label('Arsip'),
+                ImageColumn::make('file_path')
+                    ->disk('public')
+                    ->label('Preview')
             ])
             ->filters([
                 //

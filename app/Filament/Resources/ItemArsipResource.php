@@ -27,21 +27,15 @@ class ItemArsipResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('kategori')->required(),
-                TextInput::make('deskripsi')->nullable(),
-                FileUpload::make('file')
-                    ->multiple()
+                Forms\Components\TextInput::make('kategori')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('deskripsi'),
+                FileUpload::make('file_path')
+                    ->disk('public') // Menyimpan di storage/public
+                    ->directory(fn () => date('Y') . '/' . date('m') . '/' . request()->route('record')) // Struktur direktori
                     ->preserveFilenames()
-                    ->maxFiles(10)
-                    ->disk('public')
-                    ->directory('arsip_files')
-                    ->storeFiles(function ($record, $files) {
-                        foreach ($files as $file) {
-                            $record->addMedia($file)
-                                ->withCustomProperties(['kategori' => $record->kategori])
-                                ->toMediaCollection('arsip');
-                        }
-                    }),
+                    ->maxSize(10240), // Maksimum 10MB
             ]);
     }
 
@@ -51,9 +45,9 @@ class ItemArsipResource extends Resource
             ->columns([
                 TextColumn::make('kategori')->sortable(),
                 TextColumn::make('arsip.nama_arsip')->label('Bagian dari Arsip'),
-                ImageColumn::make('arsip')
-                    ->getStateUsing(fn ($record) => $record->getFirstMediaUrl('arsip'))
-                    ->defaultImageUrl('/images/default.png'),
+                ImageColumn::make('file_path')
+                    ->disk('public')
+                    ->label('Preview')
             ])
             ->filters([
                 //

@@ -50,11 +50,6 @@ class Marketing extends Model
             'no_telp']);
     }
 
-    public function perusahaan()
-    {
-        return $this->belongsTo(Pelanggan::class);
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -63,6 +58,11 @@ class Marketing extends Model
     public function pekerjaans()
     {
         return $this->hasMany(Pekerjaan::class, 'marketing_id');
+    }
+
+    public function pelanggan()
+    {
+        return $this->belongsTo(Pelanggan::class, 'perusahaan_id');
     }
 
 }
