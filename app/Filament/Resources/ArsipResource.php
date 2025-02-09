@@ -35,6 +35,8 @@ class ArsipResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('pekerjaan.marketing.pelanggan.nama_perusahaan')->sortable()->searchable(),
+                TextColumn::make('pekerjaan.nomor_oc')->label('No. OC')->sortable()->searchable(),
                 TextColumn::make('nama_arsip')->sortable()->searchable(),
                 TextColumn::make('deskripsi')->limit(50),
             ])
