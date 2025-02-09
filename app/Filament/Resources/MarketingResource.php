@@ -190,7 +190,7 @@ class MarketingResource extends Resource
                 })
                 ->sortable(false), // Nomor urut biasanya tidak perlu diurutkan
                 Tables\Columns\TextColumn::make('pekerjaan_status')
-                    ->label('Status Pekerjaan')
+                    ->label('Tabel Pekerjaan')
                     ->badge()
                     ->color(fn (bool $state): string => $state ? 'success' : 'warning')
                     ->getStateUsing(fn (Model $record): bool => $record->pekerjaans()->exists())

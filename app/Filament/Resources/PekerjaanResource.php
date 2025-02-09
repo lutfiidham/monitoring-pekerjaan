@@ -175,21 +175,13 @@ class PekerjaanResource extends Resource
                     ->label('Tanggal Mulai Kontrak')
                     ->native(false)
                     ->displayFormat('d/m/Y'),
-
-                SpatieMediaLibraryFileUpload::make('files')
-                    ->collection('files') // Harus sama dengan yang didefinisikan di model
-                    ->multiple()
-                    ->preserveFilenames()
-                    ->maxFiles(5) // Atur jumlah maksimal file yang bisa diupload
-                    ->enableDownload()
-                    ->enableOpen()
-                    ->columnSpanFull(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         $verifikatorUsers = self::getVerifikatorUsers();
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nomor')
@@ -198,6 +190,13 @@ class PekerjaanResource extends Resource
                     return $rowLoop->iteration;
                 })
                 ->sortable(false), // Nomor urut biasanya tidak perlu diurutkan
+                Tables\Columns\TextColumn::make('arsip_status')
+                    ->label('Tabel Arsip')
+                    ->badge()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'warning')
+                    ->getStateUsing(fn (Model $record): bool => $record->arsip()->exists())
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Sudah Diinput' : 'Belum Diinput')
+                    ->sortable(false),
                 Tables\Columns\TextColumn::make('marketing_id')
                     ->numeric()
                     ->sortable()

@@ -58,6 +58,11 @@ class Pekerjaan extends Model implements HasMedia
         return $this->belongsTo(Marketing::class);
     }
 
+    public function arsip()
+    {
+        return $this->hasOne(Arsip::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
