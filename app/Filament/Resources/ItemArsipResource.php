@@ -35,12 +35,14 @@ class ItemArsipResource extends Resource implements HasShieldPermissions
             'publish'
         ];
     }
-    
+
     protected static ?string $model = ItemArsip::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static bool $canCreate = false;
+
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {

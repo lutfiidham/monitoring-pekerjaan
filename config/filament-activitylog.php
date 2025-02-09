@@ -7,7 +7,7 @@ return [
         'navigation_item'        => true,
         'navigation_group'       => null,
         'navigation_icon'        => 'heroicon-o-shield-check',
-        'navigation_sort'        => null,
+        'navigation_sort'        => '100',
         'default_sort_column'    => 'id',
         'default_sort_direction' => 'desc',
         'navigation_count_badge' => false,
