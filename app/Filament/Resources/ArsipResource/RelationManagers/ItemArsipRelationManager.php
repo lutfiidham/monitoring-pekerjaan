@@ -7,19 +7,92 @@ use Filament\Tables;
 use App\Models\Arsip;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
-use App\Models\ItemArsip;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Filament\Notifications\Notification;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
-use Symfony\Component\VarDumper\VarDumper;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class ItemArsipRelationManager extends RelationManager
 {
     protected static string $relationship = 'itemArsip';
+
+    protected function deleteFiles($record)
+    {
+        // Ensure file_path exists and is not empty
+        if (empty($record->file_path)) {
+            Log::info('No files to delete for record');
+            return;
+        }
+
+        // Normalize files to array
+        $files = is_array($record->file_path) 
+            ? $record->file_path 
+            : json_decode($record->file_path, true) ?? [];
+
+        // Delete each file from storage
+        foreach ($files as $file) {
+            // Detailed logging of original file path
+            Log::info('Attempting to delete file', [
+                'original_path' => $file
+            ]);
+
+            // Try multiple path normalization strategies
+            $pathVariants = [
+                // Remove public/ prefix and ensure leading slash is removed
+                str_replace('public/', '', $file),
+                // Keep original path
+                $file,
+                // Add storage/ prefix
+                'storage/' . ltrim(str_replace('public/', '', $file), '/'),
+                // Direct path
+                ltrim($file, '/')
+            ];
+
+            $deleted = false;
+            foreach ($pathVariants as $normalizedPath) {
+                try {
+                    // Log each path variant being checked
+                    Log::info('Checking file path', [
+                        'path_variant' => $normalizedPath,
+                        'storage_exists' => Storage::exists($normalizedPath),
+                        'full_path' => storage_path('app/public/' . $normalizedPath)
+                    ]);
+
+                    // Try Storage facade deletion
+                    if (Storage::exists($normalizedPath)) {
+                        Storage::delete($normalizedPath);
+                        Log::info("Deleted file from storage: {$normalizedPath}");
+                        $deleted = true;
+                        break;
+                    }
+
+                    // Try direct file deletion as a fallback
+                    $fullPath = storage_path('app/public/' . $normalizedPath);
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath);
+                        Log::info("Deleted file directly: {$fullPath}");
+                        $deleted = true;
+                        break;
+                    }
+                } catch (\Exception $e) {
+                    Log::error("Error deleting file: {$normalizedPath}", [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                }
+            }
+
+            // Log if no deletion method worked
+            if (!$deleted) {
+                Log::warning("Could not delete file", [
+                    'original_path' => $file,
+                    'path_variants' => $pathVariants
+                ]);
+            }
+        }
+    }
 
     public function form(Form $form): Form
     {
@@ -80,7 +153,11 @@ class ItemArsipRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->before(function ($record) {
+                        // Delete associated files before deleting the record
+                        $this->deleteFiles($record);
+                    }),
                 Tables\Actions\Action::make('preview')
                     ->label('Preview Files')
                     ->icon('heroicon-o-eye')
