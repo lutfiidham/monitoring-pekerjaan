@@ -9,13 +9,13 @@ return new class extends Migration
     public function up()
     {
         Schema::table('marketing', function (Blueprint $table) {
-            $table->string('nama_pic')->nullable()->after('alamat');
-            $table->string('no_telp')->nullable()->after('nama_pic');
+            $table->string('nama_pic')->nullable();
+            $table->string('no_telp')->nullable();
         });
 
         Schema::table('pekerjaan', function (Blueprint $table) {
-            $table->string('nama_pic')->nullable()->after('pelanggan_id');
-            $table->string('no_telp')->nullable()->after('nama_pic');
+            $table->string('nama_pic')->nullable();
+            $table->string('no_telp')->nullable();
         });
     }
 
