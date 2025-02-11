@@ -9,6 +9,7 @@ use App\Models\Arsip;
 use Filament\Actions;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
+use App\Models\ItemArsip;
 use App\Models\Marketing;
 use App\Models\Pekerjaan;
 use Filament\Tables\Table;
@@ -399,12 +400,63 @@ class PekerjaanResource extends Resource
                                 return redirect()->to(ArsipResource::getUrl('edit', ['record' => $existingArsip]));
                             }
                             
+                            $pekerjaan = Pekerjaan::with('marketing.pelanggan')->find($record->id);
                             // Buat arsip baru
                             $arsip = Arsip::create([
                                 'pekerjaan_id' => $record->id,
                                 'nama_arsip' => 'Arsip ' . $record->nama_produk_atau_pekerjaan,
-                                'deskripsi' => 'Deskripsi', // Anda bisa sesuaikan status awal
+                                'deskripsi' => '',
                             ]);
+
+                            // Buat item arsip default dengan kategori spesifik
+                            if($pekerjaan->marketing->jenis_verifikasi == 'tkdn_barang'){
+                                $categories = [
+                                    '1. BERKONTRAK',
+                                    '2. OPENING MEETING',
+                                    '3. COLLECTING DOCUMENT',
+                                    '4. SURVEY LAPANGAN',
+                                    '5. VERTEK',
+                                    '6. PANEL INTERNAL (ETC & QC)',
+                                    '7. REVIEW P3DN',
+                                    '8. CLOSING MEETING',
+                                    '9. CLOSE'
+                                ];
+                            }elseif($pekerjaan->marketing->jenis_verifikasi == 'tkdn_jasa'){
+                                $categories = [
+                                    '1. BERKONTRAK',
+                                    '2. OPENING MEETING',
+                                    '3. COLLECTING DOCUMENT',
+                                    '4. SURVEY LAPANGAN',
+                                    '5. VERIFIKASI',
+                                    '6. ClOSING MEETING',
+                                    '7. CLOSE',
+                                ];
+                            }elseif($pekerjaan->marketing->jenis_verifikasi == 'bmp'){
+                                $categories = [
+                                    '1. BERKONTRAK',
+                                    '2. OPENING MEETING',	
+                                    '3.a. COLLECTING DOCUMENT Aspek No. 1',
+                                    '3.b. COLLECTING DOCUMENT Aspek No. 2',
+                                    '3.c. COLLECTING DOCUMENT Aspek No. 3',
+                                    '3.d. COLLECTING DOCUMENT Aspek No. 4',
+                                    '4. SURVEY LAPANGAN',
+                                    '5. VERTEK',		
+                                    '6. PANEL INTERNAL (ETC & QC)',		
+                                    '7. REVIEW P3DN',
+                                    '8. CLOSING MEETING',
+                                    '9. CLOSE'
+                                ];
+                            }
+                            
+
+                            foreach ($categories as $category) {
+                                ItemArsip::create([
+                                    'arsip_id' => $arsip->id,
+                                    'kategori' => $category,
+                                    'deskripsi' => null,
+                                    'file_path' => [], // Array kosong untuk file_path
+                                ]);
+                            }
                     
                             Notification::make()
                                 ->title('Arsip berhasil dibuat')
@@ -420,7 +472,8 @@ class PekerjaanResource extends Resource
                         // ->requiresConfirmation()
                         ->modalAlignment(Alignment::Center)
                         ->modalIcon('heroicon-o-plus-circle')
-                    ])->tooltip('Actions'),
+                    ])
+                    ->tooltip('Actions'),
 
             ], position: ActionsPosition::BeforeColumns)
             ->bulkActions([
