@@ -10,5 +10,7 @@ export default {
         './resources/**/*.blade.php',
         './app/Filament/**/*.php', // Tambahkan path ini
         './app/Http/**/*.php',    // Jika ada logika custom di controller
+
+        './vendor/cmsmaxinc/filament-error-pages/resources/**/*.blade.php',
     ],
 }
