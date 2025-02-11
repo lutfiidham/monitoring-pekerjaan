@@ -401,6 +401,7 @@ class PekerjaanResource extends Resource
                             }
                             
                             $pekerjaan = Pekerjaan::with('marketing.pelanggan')->find($record->id);
+                            $jenis_verifikasi = $pekerjaan->marketing->jenis_verifikasi;
                             // Buat arsip baru
                             $arsip = Arsip::create([
                                 'pekerjaan_id' => $record->id,
@@ -409,7 +410,7 @@ class PekerjaanResource extends Resource
                             ]);
 
                             // Buat item arsip default dengan kategori spesifik
-                            if($pekerjaan->marketing->jenis_verifikasi == 'tkdn_barang'){
+                            if($jenis_verifikasi == 'tkdn_barang'){
                                 $categories = [
                                     '1. BERKONTRAK',
                                     '2. OPENING MEETING',
@@ -421,7 +422,7 @@ class PekerjaanResource extends Resource
                                     '8. CLOSING MEETING',
                                     '9. CLOSE'
                                 ];
-                            }elseif($pekerjaan->marketing->jenis_verifikasi == 'tkdn_jasa'){
+                            }elseif($jenis_verifikasi == 'tkdn_jasa' | $jenis_verifikasi == 'tkdn_gab'){
                                 $categories = [
                                     '1. BERKONTRAK',
                                     '2. OPENING MEETING',
@@ -431,7 +432,7 @@ class PekerjaanResource extends Resource
                                     '6. ClOSING MEETING',
                                     '7. CLOSE',
                                 ];
-                            }elseif($pekerjaan->marketing->jenis_verifikasi == 'bmp'){
+                            }elseif($jenis_verifikasi == 'bmp'){
                                 $categories = [
                                     '1. BERKONTRAK',
                                     '2. OPENING MEETING',	
