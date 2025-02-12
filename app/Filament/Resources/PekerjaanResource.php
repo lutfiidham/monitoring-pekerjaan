@@ -279,7 +279,7 @@ class PekerjaanResource extends Resource
                 SelectFilter::make('tahun')
                     ->label('Filter Tahun')
                     ->options(function () {
-                        return \App\Models\Pekerjaan::selectRaw('strftime("%Y", tahun) as tahun')
+                        return \App\Models\Pekerjaan::selectRaw('YEAR(tahun) as tahun')
                             ->distinct()
                             ->orderBy('tahun', 'desc')
                             ->pluck('tahun', 'tahun')
@@ -292,7 +292,7 @@ class PekerjaanResource extends Resource
                     ->searchable()
                     ->query(function ($query, array $data) {
                         if (isset($data['value']) && $data['value'] !== '') {
-                            $query->whereRaw('strftime("%Y", tahun) = ?', [$data['value']]);
+                            $query->whereRaw('YEAR(tahun) = ?', [$data['value']]);
                         }
                     }),
                 SelectFilter::make('nomor_oc')

@@ -70,7 +70,7 @@ class MarketingResource extends Resource
                 ->columnSpan('full'),
                 Forms\Components\Select::make('perusahaan_id')
                     ->label('Perusahaan')
-                    ->relationship(name: 'perusahaan', titleAttribute: 'nama_perusahaan')
+                    ->relationship(name: 'pelanggan', titleAttribute: 'nama_perusahaan')
                     ->options(Pelanggan::query()->pluck('nama_perusahaan', 'id'))
                     // ->preload()
                     ->searchable()
@@ -201,7 +201,7 @@ class MarketingResource extends Resource
                     ->label('PIC Sucofindo')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('perusahaan.nama_perusahaan')
+                Tables\Columns\TextColumn::make('pelanggan.nama_perusahaan')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('is_existing')
