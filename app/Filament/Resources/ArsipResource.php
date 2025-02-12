@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Money\Money;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Arsip;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ArsipResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ArsipResource\RelationManagers;
+use Pelmered\FilamentMoneyField\Tables\Columns\MoneyColumn;
 use App\Filament\Resources\ArsipResource\RelationManagers\ItemArsipRelationManager;
 
 class ArsipResource extends Resource
@@ -38,6 +40,9 @@ class ArsipResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('pekerjaan.marketing.pelanggan.nama_perusahaan')->sortable()->searchable(),
+                TextColumn::make('pekerjaan.nomor_order')->label('No. Order')->sortable()->searchable(),
+                TextColumn::make('pekerjaan.user.name')->label('Verifikator')->sortable()->searchable(),
+                MoneyColumn::make('pekerjaan.nilai_kontrak')->label('Nilai Kontrak')->sortable()->searchable()->decimals(0),
                 TextColumn::make('pekerjaan.nomor_oc')->label('No. OC')->sortable()->searchable(),
                 TextColumn::make('nama_arsip')->sortable()->searchable(),
                 TextColumn::make('deskripsi')->limit(50),
@@ -47,6 +52,7 @@ class ArsipResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

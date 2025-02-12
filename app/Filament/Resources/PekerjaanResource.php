@@ -171,7 +171,6 @@ class PekerjaanResource extends Resource
                     ->columnSpan('full')
                     ->required(),
 
-                Forms\Components\TextInput::make('status_collecting_document'),
                 Forms\Components\DatePicker::make('tahun')
                     ->label('Tanggal Mulai Kontrak')
                     ->native(false)
@@ -207,7 +206,7 @@ class PekerjaanResource extends Resource
                     ->label('PIC Sucofindo')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('marketing.perusahaan.nama_perusahaan')
+                Tables\Columns\TextColumn::make('marketing.pelanggan.nama_perusahaan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nama_pic')
                     ->label('Nama PIC Perusahaan')
@@ -259,9 +258,6 @@ class PekerjaanResource extends Resource
                     ->sortable()
                     ->limit(50)
                     ->size(TextColumn\TextColumnSize::ExtraSmall),
-                    
-                Tables\Columns\TextColumn::make('status_collecting_document')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('tahun')
                     ->label('Tgl Kontrak')
                     ->date('d/m/Y')
