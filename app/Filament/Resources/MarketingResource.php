@@ -182,6 +182,7 @@ class MarketingResource extends Resource
     {
         $verifikatorUsers = self::getVerifikatorUsers();
         return $table
+            ->query(fn (Marketing $query) => $query->withCount('pekerjaans'))
             ->columns([
                 Tables\Columns\TextColumn::make('nomor')
                 ->label('No.')
@@ -192,10 +193,9 @@ class MarketingResource extends Resource
                 Tables\Columns\TextColumn::make('pekerjaan_status')
                     ->label('Tabel Pekerjaan')
                     ->badge()
-                    ->color(fn (bool $state): string => $state ? 'success' : 'warning')
-                    ->getStateUsing(fn (Model $record): bool => $record->pekerjaans()->exists())
-                    ->formatStateUsing(fn (bool $state): string => $state ? 'Sudah Diinput' : 'Belum Diinput')
-                    ->sortable(false),
+                    ->color(fn (Model $record): string => $record->pekerjaans_count > 0 ? 'success' : 'warning')
+                    ->formatStateUsing(fn (Model $record): string => $record->pekerjaans_count > 0 ? 'Sudah Diinput' : 'Belum Diinput')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->searchable()
                     ->label('PIC Sucofindo')

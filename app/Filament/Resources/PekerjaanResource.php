@@ -184,6 +184,7 @@ class PekerjaanResource extends Resource
         $verifikatorUsers = self::getVerifikatorUsers();
 
         return $table
+            ->query(fn (Pekerjaan $query) => $query->withCount('arsip'))
             ->columns([
                 Tables\Columns\TextColumn::make('nomor')
                 ->label('No.')
@@ -194,10 +195,9 @@ class PekerjaanResource extends Resource
                 Tables\Columns\TextColumn::make('arsip_status')
                     ->label('Tabel Arsip')
                     ->badge()
-                    ->color(fn (bool $state): string => $state ? 'success' : 'warning')
-                    ->getStateUsing(fn (Model $record): bool => $record->arsip()->exists())
-                    ->formatStateUsing(fn (bool $state): string => $state ? 'Sudah Diinput' : 'Belum Diinput')
-                    ->sortable(false),
+                    ->color(fn (Model $record): string => $record->arsip_count > 0 ? 'success' : 'warning')
+                    ->formatStateUsing(fn (Model $record): string => $record->arsip_count > 0 ? 'Sudah Diinput' : 'Belum Diinput')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('marketing_id')
                     ->numeric()
                     ->sortable()
