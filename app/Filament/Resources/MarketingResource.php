@@ -185,12 +185,12 @@ class MarketingResource extends Resource
             ->query(fn (Marketing $query) => $query->withCount('pekerjaans'))
             ->columns([
                 Tables\Columns\TextColumn::make('nomor')
-                ->label('No.')
-                ->getStateUsing(function ($rowLoop, $record) {
-                    return $rowLoop->iteration;
-                })
-                ->sortable(false), // Nomor urut biasanya tidak perlu diurutkan
-                Tables\Columns\TextColumn::make('pekerjaan_status')
+                    ->label('No.')
+                    ->getStateUsing(function ($rowLoop, $record) {
+                        return $rowLoop->iteration;
+                    })
+                    ->sortable(false), // Nomor urut biasanya tidak perlu diurutkan
+                Tables\Columns\TextColumn::make('pekerjaans_count')
                     ->label('Tabel Pekerjaan')
                     ->badge()
                     ->color(fn (Model $record): string => $record->pekerjaans_count > 0 ? 'success' : 'warning')

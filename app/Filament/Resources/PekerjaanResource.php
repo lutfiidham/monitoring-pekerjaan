@@ -192,7 +192,7 @@ class PekerjaanResource extends Resource
                     return $rowLoop->iteration;
                 })
                 ->sortable(false), // Nomor urut biasanya tidak perlu diurutkan
-                Tables\Columns\TextColumn::make('arsip_status')
+                Tables\Columns\TextColumn::make('arsip_count')
                     ->label('Tabel Arsip')
                     ->badge()
                     ->color(fn (Model $record): string => $record->arsip_count > 0 ? 'success' : 'warning')
