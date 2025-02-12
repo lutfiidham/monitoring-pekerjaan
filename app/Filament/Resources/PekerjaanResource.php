@@ -58,9 +58,9 @@ class PekerjaanResource extends Resource
                 Forms\Components\Select::make('marketing_id')
                     ->options(
                         Marketing::join('pelanggan', 'marketing.perusahaan_id', '=', 'pelanggan.id')
-                        ->select('marketing.id', DB::raw("pelanggan.nama_perusahaan || ' - Rp' || marketing.anggaran || 'jt' as detail"))
-                        ->get()->pluck('detail', 'id')
-                        )
+                            ->select('marketing.id', DB::raw("CONCAT(pelanggan.nama_perusahaan, ' - Rp', marketing.anggaran, 'jt') as detail"))
+                            ->get()->pluck('detail', 'id')
+                    )
                     ->required(),
                 Forms\Components\Select::make('user_id')
                     ->label('PIC Sucofindo')
