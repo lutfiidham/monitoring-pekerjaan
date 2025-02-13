@@ -23,9 +23,9 @@
 }
 
 /* SIDEBAR */
-.fi-sidebar.fi-sidebar-open {
+/* .fi-sidebar.fi-sidebar-open {
     @apply !w-1/5;
-}
+} */
 
 .fi-sidebar-nav-groups {
     @apply gap-y-4;
@@ -42,9 +42,9 @@
 }
 
 /* SIDEBAR ITEM */
-.fi-sidebar-item a {
+/* .fi-sidebar-item a {
     @apply px-4 py-2 rounded-xl;
-}
+} */
 
 .fi-sidebar-item a > span,
 .fi-sidebar-item a > svg {
