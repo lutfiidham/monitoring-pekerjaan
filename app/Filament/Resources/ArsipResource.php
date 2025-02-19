@@ -31,6 +31,13 @@ class ArsipResource extends Resource
         return $form
             ->schema([
                 TextInput::make('nama_arsip')->required(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'cek_kelengkapan' => 'Cek Kelengkapan',
+                        'lengkap_menunggu_pembayaran_termin_ii' => 'Lengkap, Menunggu Pembayaran Termin II',
+                        'closed' => 'Closed',
+                    ])
+                    ->required(),
                 TextInput::make('deskripsi')->nullable(),
             ]);
     }
