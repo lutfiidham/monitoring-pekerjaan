@@ -16,6 +16,7 @@
     "require": {
         "php": "^8.2",
         "andreia/filament-nord-theme": "^1.0",
+        "asmit/filament-mention": "^1.0",
         "bezhansalleh/filament-shield": "^3.3",
         "cmsmaxinc/filament-error-pages": "^1.0",
         "eightynine/filament-excel-import": "^3.1",

@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Pelmered\FilamentMoneyField\Tables\Columns\MoneyColumn;
 use Pelmered\FilamentMoneyField\Forms\Components\MoneyInput;
+use Asmit\FilamentMention\Forms\Components\RichMentionEditor;
 
 class PekerjaanResource extends Resource
 {
@@ -163,13 +164,17 @@ class PekerjaanResource extends Resource
                     ->required(),
                     Forms\Components\View::make('custom-components.button-template-progress-pekerjaan')
                     ->columnSpan('full'),
-                Forms\Components\RichEditor::make('progress')
-                    ->toolbarButtons([
-                        
-                    ])
-                    ->id('progress')
-                    ->columnSpan('full')
-                    ->required(),
+                    RichMentionEditor::make('progress')
+                    ->mentionsItems(function () {
+                        return User::all()->map(function ($user) {
+                            return [
+                                'username' => $user->name,
+                                'name' => $user->name,
+                                'avatar' => $user->profile_photo,
+                                'url' => 'admin/users/' . $user->id,
+                            ];
+                        })->toArray();
+                    })->columnSpanFull(),
 
                 Forms\Components\DatePicker::make('tahun')
                     ->label('Tanggal Mulai Kontrak')
